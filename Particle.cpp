@@ -1,9 +1,25 @@
 #include "Particle.h"
+#include <SFML/Graphics.hpp>
+
+using namespace  sf;
+using namespace std;
+
+ Particle::Particle(RenderTarget& target, int numPoints, Vector2i mouseClickPosition)
+ {
+ }
+
+void Particle::draw(RenderTarget & target, RenderStates states) const
+{
+}
+
+void Particle::update(float dt)
+{
+}
 
 
 bool Particle::almostEqual(double a, double b, double eps)
 {
-	return fabs(a - b) < eps;
+    return fabs(a - b) < eps;
 }
 
 void Particle::unitTests()
@@ -60,7 +76,7 @@ void Particle::unitTests()
         cout << "Failed." << endl;
     }
 
-    
+
     cout << "Testing Particles..." << endl;
     cout << "Testing Particle mapping to Cartesian origin..." << endl;
     if (m_centerCoordinate.x != 0 || m_centerCoordinate.y != 0)
@@ -144,3 +160,21 @@ void Particle::unitTests()
 
     cout << "Score: " << score << " / 7" << endl;
 }
+
+void Particle::rotate(double theta)
+{
+}
+
+void Particle::scale(double c)
+{
+}
+
+void Particle::translate(double xShift, double yShift)
+{
+}
+
+
+
+
+
+
