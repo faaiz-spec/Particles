@@ -1,19 +1,88 @@
 #include "Particle.h"
 #include <SFML/Graphics.hpp>
+#include <iostream>
 
 using namespace  sf;
 using namespace std;
 
- Particle::Particle(RenderTarget& target, int numPoints, Vector2i mouseClickPosition)
- {
- }
+Particle::Particle(RenderTarget& target, int numPoints, Vector2i mouseClickPosition)
+    : m_A(2, numPoints), m_ttl(TTL), m_numPoints(numPoints) {
 
-void Particle::draw(RenderTarget & target, RenderStates states) const
-{
+    // Seed the random number generator
+    srand(static_cast<unsigned int>(time(0)));
+
+    // Initialize random angular velocity
+    m_radiansPerSec = static_cast<float>(rand()) / RAND_MAX * M_PI;
+
+    // Map mouse click position to Cartesian coordinates
+    m_cartesianPlane = target.getDefaultView();
+    m_cartesianPlane.setCenter(0, 0);
+    m_cartesianPlane.setSize(target.getSize().x, -target.getSize().y);
+
+    // Map mouse click position to the Cartesian coordinate system
+    m_centerCoordinate = target.mapPixelToCoords(mouseClickPosition, m_cartesianPlane);
+
+    // Random pixel velocities
+    m_vx = (rand() % 401 + 100) * (rand() % 2 == 0 ? 1 : -1); // Between 100 and 500
+    m_vy = (rand() % 401 + 100) * (rand() % 2 == 0 ? 1 : -1); // Between 100 and 500
+
+    // Colors
+    m_color1 = Color::White;
+    m_color2 = Color(rand() % 256, rand() % 256, rand() % 256);
+
+    // Generate vertices
+    float theta = static_cast<float>(rand()) / RAND_MAX * (M_PI / 2);
+    float dTheta = (numPoints > 1) ? (2 * M_PI / (numPoints - 1)) : 0; // Avoid division by zero
+
+    for (int j = 0; j < numPoints; ++j) {
+        float r = rand() % 61 + 20; // Random radius between 20 and 80
+        float dx = r * cos(theta);
+        float dy = r * sin(theta);
+
+        m_A(0, j) = m_centerCoordinate.x + dx;
+        m_A(1, j) = m_centerCoordinate.y + dy;
+
+        theta += dTheta;
+    }
 }
 
-void Particle::update(float dt)
-{
+void Particle::draw(RenderTarget& target, RenderStates states) const {
+    // Ensure there are points to draw
+    if (m_numPoints < 1) {
+        return; // Nothing to draw
+    }
+
+    // Create a VertexArray for drawing the particle
+    VertexArray lines(PrimitiveType::TriangleFan, m_numPoints + 1);
+
+    // Map the center coordinate to pixel coordinates
+    Vector2f center = target.mapCoordsToPixel(m_centerCoordinate, m_cartesianPlane);
+    lines[0].position = center; // Set the center position
+    lines[0].color = m_color1;  // Set the center color
+
+    // Loop through each vertex and set its position and color
+    for (int j = 1; j <= m_numPoints; ++j) {
+        // Access the vertex in the Matrix m_A
+        Vector2f vertex = target.mapCoordsToPixel(Vector2f(m_A(0, j - 1), m_A(1, j - 1)), m_cartesianPlane);
+        lines[j].position = vertex; // Set vertex position
+        lines[j].color = m_color2;  // Set vertex color
+    }
+
+    // Draw the VertexArray to the target
+    target.draw(lines, states);
+}
+
+void Particle::update(float dt) {
+    m_ttl -= dt;
+
+    rotate(dt * m_radiansPerSec);
+    scale(SCALE);
+
+    float dx = m_vx * dt;
+    m_vy -= G * dt; // Apply gravity
+    float dy = m_vy * dt;
+
+    translate(dx, dy);
 }
 
 
@@ -161,20 +230,31 @@ void Particle::unitTests()
     cout << "Score: " << score << " / 7" << endl;
 }
 
-void Particle::rotate(double theta)
-{
+void Particle::rotate(double theta) {
+    Vector2f temp = m_centerCoordinate; // Store the center coordinate
+    translate(-temp.x, -temp.y); // Move to origin
+
+    RotationMatrix R(theta); // Create rotation matrix
+    m_A = R * m_A; // Apply rotation
+
+    translate(temp.x, temp.y); // Move back to original position
 }
 
-void Particle::scale(double c)
-{
+void Particle::scale(double c) {
+    Vector2f temp = m_centerCoordinate; // Store the center coordinate
+    translate(-temp.x, -temp.y); // Move to origin
+
+    ScalingMatrix S(c); // Create scaling matrix
+    m_A = S * m_A; // Apply scaling
+
+    translate(temp.x, temp.y); // Move back to original position
 }
 
-void Particle::translate(double xShift, double yShift)
-{
+void Particle::translate(double xShift, double yShift) {
+    TranslationMatrix T(xShift, yShift, m_A.getCols()); // Create translation matrix
+    m_A = T + m_A; // Apply translation
+
+    // Update the center coordinate
+    m_centerCoordinate.x += xShift;
+    m_centerCoordinate.y += yShift;
 }
-
-
-
-
-
-
