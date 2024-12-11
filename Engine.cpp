@@ -18,7 +18,7 @@ void Engine::input()
             for (int i = 0; i < 5; ++i)
             {
                 int numPoints = rand() % (50 - 25 + 1) + 25; // Random number between 25 and 50
-                Vector2f position(static_cast<float>(event.mouseButton.x), static_cast<float>(event.mouseButton.y));
+                Vector2i position(static_cast<float>(event.mouseButton.x), static_cast<float>(event.mouseButton.y));
                 m_particles.emplace_back(m_Window, numPoints, position);
             }
         }
