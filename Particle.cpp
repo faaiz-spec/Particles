@@ -4,12 +4,12 @@
 
 using namespace  sf;
 using namespace std;
-
 Particle::Particle(RenderTarget& target, int numPoints, Vector2i mouseClickPosition)
-    : m_A(2, numPoints), m_ttl(TTL), m_numPoints(numPoints) {
+    : m_A(2, numPoints) {
 
-    // Seed the random number generator
-    srand(static_cast<unsigned int>(time(0)));
+    m_ttl = TTL;
+
+    m_numPoints = numPoints;
 
     // Initialize random angular velocity
     m_radiansPerSec = static_cast<float>(rand()) / RAND_MAX * M_PI;
@@ -24,7 +24,7 @@ Particle::Particle(RenderTarget& target, int numPoints, Vector2i mouseClickPosit
 
     // Random pixel velocities
     m_vx = (rand() % 401 + 100) * (rand() % 2 == 0 ? 1 : -1); // Between 100 and 500
-    m_vy = (rand() % 401 + 100) * (rand() % 2 == 0 ? 1 : -1); // Between 100 and 500
+    m_vy = (rand() % 401 + 100);// *(rand() % 2 == 0 ? 1 : -1); // Between 100 and 500
 
     // Colors
     m_color1 = Color::White;
@@ -33,24 +33,23 @@ Particle::Particle(RenderTarget& target, int numPoints, Vector2i mouseClickPosit
     // Generate vertices
     float theta = static_cast<float>(rand()) / RAND_MAX * (M_PI / 2);
     float dTheta = (numPoints > 1) ? (2 * M_PI / (numPoints - 1)) : 0; // Avoid division by zero
-
-    for (int j = 0; j < numPoints; ++j) {
-        float r = rand() % 61 + 20; // Random radius between 20 and 80
-        float dx = r * cos(theta);
-        float dy = r * sin(theta);
-
+    for (int j = 0; j < numPoints; ++j)
+    {
+        float r, dx, dy;
+        r = rand() % 60 + 20;
+        dx = r * cos(theta);
+        dy = r * sin(theta);
         m_A(0, j) = m_centerCoordinate.x + dx;
         m_A(1, j) = m_centerCoordinate.y + dy;
-
         theta += dTheta;
     }
 }
 
 void Particle::draw(RenderTarget& target, RenderStates states) const {
     // Ensure there are points to draw
-    if (m_numPoints < 1) {
+    if (m_numPoints < 1)
         return; // Nothing to draw
-    }
+  
 
     // Create a VertexArray for drawing the particle
     VertexArray lines(PrimitiveType::TriangleFan, m_numPoints + 1);

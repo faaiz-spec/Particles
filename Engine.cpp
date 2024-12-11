@@ -15,7 +15,7 @@ void Engine::input()
         if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left)
         {
             // Create 5 particles on left mouse button press
-            for (int i = 0; i < 5; ++i)
+            for (int i = 0; i < 10; ++i)
             {
                 int numPoints = rand() % (50 - 25 + 1) + 25; // Random number between 25 and 50
                 Vector2i position(static_cast<float>(event.mouseButton.x), static_cast<float>(event.mouseButton.y));
@@ -78,7 +78,7 @@ void Engine::run()
         float dtAsSeconds = dt.asSeconds();
 
         input();
-        update(dtAsSeconds);
+        update(dtAsSeconds / 2);
         draw();
     }
 }
