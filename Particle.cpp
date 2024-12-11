@@ -56,14 +56,14 @@ void Particle::draw(RenderTarget& target, RenderStates states) const {
     VertexArray lines(PrimitiveType::TriangleFan, m_numPoints + 1);
 
     // Map the center coordinate to pixel coordinates
-    Vector2f center = target.mapCoordsToPixel(m_centerCoordinate, m_cartesianPlane);
+    Vector2f center = Vector2f(target.mapCoordsToPixel(m_centerCoordinate, m_cartesianPlane));
     lines[0].position = center; // Set the center position
     lines[0].color = m_color1;  // Set the center color
 
     // Loop through each vertex and set its position and color
     for (int j = 1; j <= m_numPoints; ++j) {
         // Access the vertex in the Matrix m_A
-        Vector2f vertex = target.mapCoordsToPixel(Vector2f(m_A(0, j - 1), m_A(1, j - 1)), m_cartesianPlane);
+        Vector2f vertex = Vector2f(target.mapCoordsToPixel(Vector2f(m_A(0, j - 1), m_A(1, j - 1)), m_cartesianPlane));
         lines[j].position = vertex; // Set vertex position
         lines[j].color = m_color2;  // Set vertex color
     }
