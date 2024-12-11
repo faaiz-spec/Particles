@@ -17,7 +17,7 @@ Particle::Particle(RenderTarget& target, int numPoints, Vector2i mouseClickPosit
     // Map mouse click position to Cartesian coordinates
     m_cartesianPlane = target.getDefaultView();
     m_cartesianPlane.setCenter(0, 0);
-    m_cartesianPlane.setSize(target.getSize().x, -target.getSize().y);
+    m_cartesianPlane.setSize(target.getSize().x, (-1.0) * target.getSize().y);
 
     // Map mouse click position to the Cartesian coordinate system
     m_centerCoordinate = target.mapPixelToCoords(mouseClickPosition, m_cartesianPlane);
