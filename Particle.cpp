@@ -5,6 +5,7 @@
 using namespace  sf;
 using namespace std;
 
+// construct a particle object
 Particle::Particle(RenderTarget& target, int numPoints, Vector2i mouseClickPosition, int hue)
     : m_A(2, numPoints) {
 
@@ -46,6 +47,7 @@ Particle::Particle(RenderTarget& target, int numPoints, Vector2i mouseClickPosit
     }
 }
 
+// cycle through rainbow for colors
 Color Particle::color(size_t count, int SLIDER_COUNT) const
 {
     Uint8 r, g, b;
@@ -96,6 +98,7 @@ Color Particle::color(size_t count, int SLIDER_COUNT) const
     return Color(r, g, b);
 }
 
+// update physics
 void Particle::update(float dt) 
 {
     m_ttl -= dt;
@@ -110,6 +113,7 @@ void Particle::update(float dt)
     translate(dx, dy);
 }
 
+// draw particles
 void Particle::draw(RenderTarget& target, RenderStates states) const
 {
     // Ensure there are points to draw
@@ -137,6 +141,7 @@ void Particle::draw(RenderTarget& target, RenderStates states) const
     target.draw(lines, states);
 }
 
+// rotate particles using a matrix
 void Particle::rotate(double theta) 
 {
     Vector2f temp = m_centerCoordinate; // Store the center coordinate
@@ -148,6 +153,7 @@ void Particle::rotate(double theta)
     translate(temp.x, temp.y); // Move back to original position
 }
 
+// shrink/grow particles using a matrix
 void Particle::scale(double c) 
 {
     Vector2f temp = m_centerCoordinate; // Store the center coordinate
@@ -159,6 +165,7 @@ void Particle::scale(double c)
     translate(temp.x, temp.y); // Move back to original position
 }
 
+// move particles using a matrix
 void Particle::translate(double xShift, double yShift)
 {
     TranslationMatrix T(xShift, yShift, m_A.getCols()); // Create translation matrix

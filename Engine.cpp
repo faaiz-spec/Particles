@@ -1,6 +1,6 @@
 #include "Engine.h"
 
-
+// initialize engine values
 Engine::Engine()
 {
     // Create the window with desktop resolution
