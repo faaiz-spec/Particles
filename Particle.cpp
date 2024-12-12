@@ -90,11 +90,28 @@ Color Particle::color(size_t count, int SLIDER_COUNT) const
         g = 0;
         b = 1530 - count * slider;
     }
-    cout << "r: " << (int)r << " | g: " << (int)g << " | b: " << (int)b << '\n';
+
+    // debug message
+    //cout << "r: " << (int)r << " | g: " << (int)g << " | b: " << (int)b << '\n';
     return Color(r, g, b);
 }
 
-void Particle::draw(RenderTarget& target, RenderStates states) const {
+void Particle::update(float dt) 
+{
+    m_ttl -= dt;
+
+    rotate(dt * m_radiansPerSec);
+    scale(SCALE);
+
+    float dx = m_vx * dt;
+    m_vy -= G * dt; // Apply gravity
+    float dy = m_vy * dt;
+
+    translate(dx, dy);
+}
+
+void Particle::draw(RenderTarget& target, RenderStates states) const
+{
     // Ensure there are points to draw
     if (m_numPoints < 1)
         return; // Nothing to draw
@@ -120,20 +137,8 @@ void Particle::draw(RenderTarget& target, RenderStates states) const {
     target.draw(lines, states);
 }
 
-void Particle::update(float dt) {
-    m_ttl -= dt;
-
-    rotate(dt * m_radiansPerSec);
-    scale(SCALE);
-
-    float dx = m_vx * dt;
-    m_vy -= G * dt; // Apply gravity
-    float dy = m_vy * dt;
-
-    translate(dx, dy);
-}
-
-void Particle::rotate(double theta) {
+void Particle::rotate(double theta) 
+{
     Vector2f temp = m_centerCoordinate; // Store the center coordinate
     translate(-temp.x, -temp.y); // Move to origin
 
@@ -143,7 +148,8 @@ void Particle::rotate(double theta) {
     translate(temp.x, temp.y); // Move back to original position
 }
 
-void Particle::scale(double c) {
+void Particle::scale(double c) 
+{
     Vector2f temp = m_centerCoordinate; // Store the center coordinate
     translate(-temp.x, -temp.y); // Move to origin
 
@@ -153,7 +159,8 @@ void Particle::scale(double c) {
     translate(temp.x, temp.y); // Move back to original position
 }
 
-void Particle::translate(double xShift, double yShift) {
+void Particle::translate(double xShift, double yShift)
+{
     TranslationMatrix T(xShift, yShift, m_A.getCols()); // Create translation matrix
     m_A = T + m_A; // Apply translation
 

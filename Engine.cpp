@@ -1,5 +1,31 @@
 #include "Engine.h"
 
+
+Engine::Engine()
+{
+    // Create the window with desktop resolution
+    m_Window.create(VideoMode::getDesktopMode(), "Particle Engine");
+
+    m_color = 0;
+    m_curr_sound = 0;
+
+    for (int i = 0; i < AUDIO_COUNT; ++i)
+        if (!m_audiofile[i].loadFromFile("audio\\firework_" + to_string(i) + ".mp3"))
+            cout << "Failed to load audio\\firework_" << i << ".mp3 from file\n";
+
+    for (int i = 0; i < CHANNEL_COUNT; ++i)
+        if (i % AUDIO_COUNT == 0)
+            m_firework[i].setBuffer(m_audiofile[0]);
+        else if (i % AUDIO_COUNT == 1)
+            m_firework[i].setBuffer(m_audiofile[1]);
+        else if (i % AUDIO_COUNT == 2)
+            m_firework[i].setBuffer(m_audiofile[2]);
+        else if (i % AUDIO_COUNT == 3)
+            m_firework[i].setBuffer(m_audiofile[3]);
+        else
+            m_firework[i].setBuffer(m_audiofile[4]);
+}
+
 void Engine::input()
 {
     Event event;
@@ -19,7 +45,7 @@ void Engine::input()
             for (int i = 0; i < PARTICLE_COUNT; ++i)
             {
                 if ((m_color += 30) >= SLIDER_MAX) m_color = 0;
-                int numPoints = rand() % (50 - 25 + 1) + 25; // Random number between 25 and 50
+                int numPoints = (rand() % 26) + 25; // Random number between 25 and 50
                 Vector2i position((event.mouseButton.x), (event.mouseButton.y));
                 m_particles.emplace_back(m_Window, numPoints, position, m_color);
             }
@@ -54,31 +80,6 @@ void Engine::draw()
     }
 
     m_Window.display(); // Display the window
-}
-
-Engine::Engine()
-{
-    // Create the window with desktop resolution
-    m_Window.create(VideoMode::getDesktopMode(), "Particle Engine");
-
-    m_color = 0;
-    m_curr_sound = 0;
-
-    for (int i = 0; i < AUDIO_COUNT; ++i)
-        if (!m_audiofile[i].loadFromFile("audio\\firework_" + to_string(i) + ".mp3"))
-            cout << "Failed to load audio\\firework_" << i << ".mp3 from file\n";
-
-    for (int i = 0; i < CHANNEL_COUNT; ++i)
-        if (i % AUDIO_COUNT == 0)
-            m_firework[i].setBuffer(m_audiofile[0]);
-        else if (i % AUDIO_COUNT == 1)
-            m_firework[i].setBuffer(m_audiofile[1]);
-        else if (i % AUDIO_COUNT == 2)
-            m_firework[i].setBuffer(m_audiofile[2]);
-        else if (i % AUDIO_COUNT == 3)
-            m_firework[i].setBuffer(m_audiofile[3]);
-        else
-            m_firework[i].setBuffer(m_audiofile[4]);
 }
 
 void Engine::run()
