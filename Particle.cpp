@@ -4,7 +4,7 @@
 
 using namespace  sf;
 using namespace std;
-Particle::Particle(RenderTarget& target, int numPoints, Vector2i mouseClickPosition)
+Particle::Particle(RenderTarget& target, int numPoints, Vector2i mouseClickPosition, int hue)
     : m_A(2, numPoints) {
 
     m_ttl = TTL;
@@ -28,7 +28,7 @@ Particle::Particle(RenderTarget& target, int numPoints, Vector2i mouseClickPosit
 
     // Colors
     m_color1 = Color::White;
-    m_color2 = Color(rand() % 256, rand() % 256, rand() % 256);
+    m_color2 = Color(rand() % hue, rand() % hue, rand() % hue);
 
     // Generate vertices
     float theta = static_cast<float>(rand()) / RAND_MAX * (M_PI / 2);

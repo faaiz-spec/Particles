@@ -1,6 +1,5 @@
 #include "Engine.h"
 
-
 void Engine::input()
 {
     Event event;
@@ -14,12 +13,15 @@ void Engine::input()
 
         if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left)
         {
+            m_firework[m_curr_sound].play();
+            if (++m_curr_sound == CHANNEL_COUNT) m_curr_sound = 0;
             // Create 5 particles on left mouse button press
-            for (int i = 0; i < 10; ++i)
+            for (int i = 0; i < 5; ++i)
             {
+                if (++m_hue == 256) m_hue = 1;
                 int numPoints = rand() % (50 - 25 + 1) + 25; // Random number between 25 and 50
-                Vector2i position(static_cast<float>(event.mouseButton.x), static_cast<float>(event.mouseButton.y));
-                m_particles.emplace_back(m_Window, numPoints, position);
+                Vector2i position((event.mouseButton.x), (event.mouseButton.y));
+                m_particles.emplace_back(m_Window, numPoints, position, m_hue);
             }
         }
     }
@@ -58,6 +60,25 @@ Engine::Engine()
 {
     // Create the window with desktop resolution
     m_Window.create(VideoMode::getDesktopMode(), "Particle Engine");
+
+    m_hue = 0;
+    m_curr_sound = 0;
+
+    for (int i = 0; i < AUDIO_COUNT; ++i)
+        if (!m_audiofile[i].loadFromFile("audio\\firework_" + to_string(i) + ".mp3"))
+            cout << "Failed to load audio\\firework_" << i << ".mp3 from file\n";
+
+    for (int i = 0; i < CHANNEL_COUNT; ++i)
+        if (i % AUDIO_COUNT == 0)
+            m_firework[i].setBuffer(m_audiofile[0]);
+        else if (i % AUDIO_COUNT == 1)
+            m_firework[i].setBuffer(m_audiofile[1]);
+        else if (i % AUDIO_COUNT == 2)
+            m_firework[i].setBuffer(m_audiofile[2]);
+        else if (i % AUDIO_COUNT == 3)
+            m_firework[i].setBuffer(m_audiofile[3]);
+        else
+            m_firework[i].setBuffer(m_audiofile[4]);
 }
 
 void Engine::run()
