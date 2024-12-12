@@ -10,8 +10,8 @@ Engine::Engine()
     m_curr_sound = 0;
 
     for (int i = 0; i < AUDIO_COUNT; ++i)
-        if (!m_audiofile[i].loadFromFile("audio\\firework_" + to_string(i) + ".mp3"))
-            cout << "Failed to load audio\\firework_" << i << ".mp3 from file\n";
+        if (!m_audiofile[i].loadFromFile("audio/firework_" + to_string(i) + ".mp3"))
+            cout << "Failed to load audio/firework_" << i << ".mp3 from file\n";
 
     for (int i = 0; i < CHANNEL_COUNT; ++i)
         if (i % AUDIO_COUNT == 0)

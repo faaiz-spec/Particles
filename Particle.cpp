@@ -50,7 +50,7 @@ Color Particle::color(size_t count, int SLIDER_COUNT) const
 {
     Uint8 r, g, b;
 
-    int slider = 1540 / SLIDER_COUNT;
+    int slider = 1536 / SLIDER_COUNT;
     //if (count == SLIDER_COUNT)
     //    r = g = b = 0;
 
@@ -92,7 +92,7 @@ Color Particle::color(size_t count, int SLIDER_COUNT) const
     }
 
     // debug message
-    //cout << "r: " << (int)r << " | g: " << (int)g << " | b: " << (int)b << '\n';
+    // cout << "r: " << (int)r << " | g: " << (int)g << " | b: " << (int)b << '\n';
     return Color(r, g, b);
 }
 

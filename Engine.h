@@ -2,7 +2,6 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 #include "Particle.h"
-#include <vector>
 #include <iostream>
 #include <chrono>
 using namespace sf;
