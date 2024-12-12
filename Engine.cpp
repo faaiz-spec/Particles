@@ -16,12 +16,12 @@ void Engine::input()
             m_firework[m_curr_sound].play();
             if (++m_curr_sound == CHANNEL_COUNT) m_curr_sound = 0;
             // Create 5 particles on left mouse button press
-            for (int i = 0; i < 5; ++i)
+            for (int i = 0; i < PARTICLE_COUNT; ++i)
             {
-                if (++m_hue == 256) m_hue = 1;
+                if ((m_color += 30) >= SLIDER_MAX) m_color = 0;
                 int numPoints = rand() % (50 - 25 + 1) + 25; // Random number between 25 and 50
                 Vector2i position((event.mouseButton.x), (event.mouseButton.y));
-                m_particles.emplace_back(m_Window, numPoints, position, m_hue);
+                m_particles.emplace_back(m_Window, numPoints, position, m_color);
             }
         }
     }
@@ -61,7 +61,7 @@ Engine::Engine()
     // Create the window with desktop resolution
     m_Window.create(VideoMode::getDesktopMode(), "Particle Engine");
 
-    m_hue = 0;
+    m_color = 0;
     m_curr_sound = 0;
 
     for (int i = 0; i < AUDIO_COUNT; ++i)

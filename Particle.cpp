@@ -4,6 +4,7 @@
 
 using namespace  sf;
 using namespace std;
+
 Particle::Particle(RenderTarget& target, int numPoints, Vector2i mouseClickPosition, int hue)
     : m_A(2, numPoints) {
 
@@ -28,7 +29,7 @@ Particle::Particle(RenderTarget& target, int numPoints, Vector2i mouseClickPosit
 
     // Colors
     m_color1 = Color::White;
-    m_color2 = Color(rand() % hue, rand() % hue, rand() % hue);
+    m_color2 = color(hue, SLIDER_MAX);
 
     // Generate vertices
     float theta = static_cast<float>(rand()) / RAND_MAX * (M_PI / 2);
@@ -45,11 +46,59 @@ Particle::Particle(RenderTarget& target, int numPoints, Vector2i mouseClickPosit
     }
 }
 
+Color Particle::color(size_t count, int SLIDER_COUNT) const
+{
+    Uint8 r, g, b;
+
+    int slider = 1540 / SLIDER_COUNT;
+    //if (count == SLIDER_COUNT)
+    //    r = g = b = 0;
+
+    if (count < SLIDER_COUNT / 6)
+    {
+        r = 255;
+        g = count * slider;
+        b = 0;
+    }
+    else if (count < 2 * SLIDER_COUNT / 6)
+    {
+        r = 510 - count * slider;
+        g = 255;
+        b = 0;
+    }
+    else if (count < 3 * SLIDER_COUNT / 6)
+    {
+        r = 0;
+        g = 255;
+        b = -510 + count * slider;
+    }
+    else if (count < 4 * SLIDER_COUNT / 6)
+    {
+        r = 0;
+        g = 1020 - count * slider;
+        b = 255;
+    }
+    else if (count < 5 * SLIDER_COUNT / 6)
+    {
+        r = -1020 + count * slider;
+        g = 0;
+        b = 255;
+    }
+    else
+    {
+        r = 255;
+        g = 0;
+        b = 1530 - count * slider;
+    }
+    cout << "r: " << (int)r << " | g: " << (int)g << " | b: " << (int)b << '\n';
+    return Color(r, g, b);
+}
+
 void Particle::draw(RenderTarget& target, RenderStates states) const {
     // Ensure there are points to draw
     if (m_numPoints < 1)
         return; // Nothing to draw
-  
+
 
     // Create a VertexArray for drawing the particle
     VertexArray lines(PrimitiveType::TriangleFan, m_numPoints + 1);
@@ -84,6 +133,34 @@ void Particle::update(float dt) {
     translate(dx, dy);
 }
 
+void Particle::rotate(double theta) {
+    Vector2f temp = m_centerCoordinate; // Store the center coordinate
+    translate(-temp.x, -temp.y); // Move to origin
+
+    RotationMatrix R(theta); // Create rotation matrix
+    m_A = R * m_A; // Apply rotation
+
+    translate(temp.x, temp.y); // Move back to original position
+}
+
+void Particle::scale(double c) {
+    Vector2f temp = m_centerCoordinate; // Store the center coordinate
+    translate(-temp.x, -temp.y); // Move to origin
+
+    ScalingMatrix S(c); // Create scaling matrix
+    m_A = S * m_A; // Apply scaling
+
+    translate(temp.x, temp.y); // Move back to original position
+}
+
+void Particle::translate(double xShift, double yShift) {
+    TranslationMatrix T(xShift, yShift, m_A.getCols()); // Create translation matrix
+    m_A = T + m_A; // Apply translation
+
+    // Update the center coordinate
+    m_centerCoordinate.x += xShift;
+    m_centerCoordinate.y += yShift;
+}
 
 bool Particle::almostEqual(double a, double b, double eps)
 {
@@ -186,7 +263,7 @@ void Particle::unitTests()
     bool scalePassed = true;
     for (int j = 0; j < initialCoords.getCols(); j++)
     {
-        if (!almostEqual(m_A(0, j), 0.5 * initialCoords(0,j)) || !almostEqual(m_A(1, j), 0.5 * initialCoords(1, j)))
+        if (!almostEqual(m_A(0, j), 0.5 * initialCoords(0, j)) || !almostEqual(m_A(1, j), 0.5 * initialCoords(1, j)))
         {
             cout << "Failed mapping: ";
             cout << "(" << initialCoords(0, j) << ", " << initialCoords(1, j) << ") ==> (" << m_A(0, j) << ", " << m_A(1, j) << ")" << endl;
@@ -227,33 +304,4 @@ void Particle::unitTests()
     }
 
     cout << "Score: " << score << " / 7" << endl;
-}
-
-void Particle::rotate(double theta) {
-    Vector2f temp = m_centerCoordinate; // Store the center coordinate
-    translate(-temp.x, -temp.y); // Move to origin
-
-    RotationMatrix R(theta); // Create rotation matrix
-    m_A = R * m_A; // Apply rotation
-
-    translate(temp.x, temp.y); // Move back to original position
-}
-
-void Particle::scale(double c) {
-    Vector2f temp = m_centerCoordinate; // Store the center coordinate
-    translate(-temp.x, -temp.y); // Move to origin
-
-    ScalingMatrix S(c); // Create scaling matrix
-    m_A = S * m_A; // Apply scaling
-
-    translate(temp.x, temp.y); // Move back to original position
-}
-
-void Particle::translate(double xShift, double yShift) {
-    TranslationMatrix T(xShift, yShift, m_A.getCols()); // Create translation matrix
-    m_A = T + m_A; // Apply translation
-
-    // Update the center coordinate
-    m_centerCoordinate.x += xShift;
-    m_centerCoordinate.y += yShift;
 }

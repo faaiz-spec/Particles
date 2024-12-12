@@ -6,6 +6,7 @@
 const float G = 1000;      //Gravity
 const float TTL = 5.0;  //Time To Live
 const float SCALE = 0.999;
+const int SLIDER_MAX = 1540;
 
 using namespace Matrices;
 using namespace sf;
@@ -32,6 +33,9 @@ private:
     Color m_color1;
     Color m_color2;
     Matrix m_A;
+
+    /// color a particle with a color slider
+    Color color(size_t count, int SLIDER_COUNT) const;
 
     ///rotate Particle by theta radians counter-clockwise
     ///construct a RotationMatrix R, left mulitply it to m_A

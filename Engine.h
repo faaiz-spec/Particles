@@ -10,6 +10,7 @@ using namespace std;
 
 #define CHANNEL_COUNT 20
 #define AUDIO_COUNT 5
+const int PARTICLE_COUNT = 5;
 
 class Engine
 {
@@ -19,7 +20,7 @@ private:
 	SoundBuffer m_audiofile[AUDIO_COUNT];
 	Sound m_firework[CHANNEL_COUNT];
 	int m_curr_sound;
-	int m_hue;
+	int m_color;
 
 	//vector for Particles
 	vector<Particle> m_particles;
